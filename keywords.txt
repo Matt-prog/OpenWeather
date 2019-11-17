@@ -1,5 +1,5 @@
 OpenWeather	KEYWORD1
-Weather	KEYWORD1
+Weather	KEYWORD3
 
 longitude	KEYWORD2
 latitude	KEYWORD2
