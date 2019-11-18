@@ -29,7 +29,7 @@ void setup() {
 
   // We start by connecting to a WiFi network
   Serial.println();
-  Serial.print("Connecting to ");
+  Serial.print(F("Connecting to "));
   Serial.println(SSID);
   WiFi.begin(SSID, PASS);
   
@@ -39,12 +39,12 @@ void setup() {
   }
   Serial.println("");
   
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
+  Serial.println(F("WiFi connected"));
+  Serial.println(F("IP address: "));
   Serial.println(WiFi.localIP());
 
   Serial.println();
-  Serial.println("Weather data:");
+  Serial.println(F("Weather data:"));
   OpenWeather.key(OW_API_KEY); //Inserting API key that allows us to use openweathermap.org API
   Weather w = OpenWeather.getWeatherByCityName(city_name,country,units,language); //Getting weather data from openweathermap.org
   //Execution time around 100ms
@@ -52,7 +52,8 @@ void setup() {
   //Weather w = getWeatherByID(ID,units,language);
   //Weather w = getWeatherByZIP(ZIP_code,country,units,language);
   //Weather w = getWeatherByCoords(latitude,longitude,units,language);
-  
+
+  //status is http code of response
   if(w.status == 200) printWeather(&w);                           //Data received, prints all data to Serial monitor
   else if(w.status == 401) Serial.println(F("BAD API KEY!"));     //Wrong API key
   else if(w.status == 404) Serial.println(F("CITY NOT FOUND!"));  //City was not found
@@ -67,118 +68,118 @@ void loop() {
 
 //Prints all data from weather structure
 void printWeather(Weather *w){
-  Serial.print("Longitude: ");
+  Serial.print(F("Longitude: "));
   Serial.print(w->longitude);
-  Serial.println("\xC2\xB0"); //degrees = °
+  Serial.println(F("\xC2\xB0")); //degrees = °
   
-  Serial.print("Latitude: ");
+  Serial.print(F("Latitude: "));
   Serial.print(w->latitude);
-  Serial.println("\xC2\xB0"); //degrees = °
+  Serial.println(F("\xC2\xB0")); //degrees = °
   
-  Serial.print("Weather ID: "); Serial.println(w->weather_id);
+  Serial.print(F("Weather ID: ")); Serial.println(w->weather_id);
   
-  Serial.print("Weather main: "); Serial.println(w->weather_main);
+  Serial.print(F("Weather main: ")); Serial.println(w->weather_main);
   
-  Serial.print("Weather description: "); Serial.println(w->weather_description);
+  Serial.print(F("Weather description: ")); Serial.println(w->weather_description);
   
-  Serial.print("Weather icon: "); Serial.println(w->weather_icon);
+  Serial.print(F("Weather icon: ")); Serial.println(w->weather_icon);
   
-  Serial.print("Temperature: ");
+  Serial.print(F("Temperature: "));
   Serial.print(w->temp);
-  Serial.print("\xC2\xB0"); //degrees = °
+  Serial.print(F("\xC2\xB0")); //degrees = °
   if(w->units == default_) Serial.println('K');
   else if(w->units == metric) Serial.println('C');
   else if(w->units == imperial) Serial.println('F');
   
   Serial.print("Temperature max: ");
   Serial.print(w->temp_max);
-  Serial.print("\xC2\xB0"); //degrees = °
+  Serial.print(F("\xC2\xB0")); //degrees = °
   if(w->units == default_) Serial.println('K');
   else if(w->units == metric) Serial.println('C');
   else if(w->units == imperial) Serial.println('F');
   
-  Serial.print("Temperature min: ");
+  Serial.print(F("Temperature min: "));
   Serial.print(w->temp_min);
-  Serial.print("\xC2\xB0"); //degrees = °
+  Serial.print(F("\xC2\xB0")); //degrees = °
   if(w->units == default_) Serial.println('K');
   else if(w->units == metric) Serial.println('C');
   else if(w->units == imperial) Serial.println('F');
   
-  Serial.print("Pressure: ");
+  Serial.print(F("Pressure: "));
   Serial.print(w->pressure);
-  Serial.println("hPa");
+  Serial.println(F("hPa"));
   
-  Serial.print("Humidity: ");
+  Serial.print(F("Humidity: "));
   Serial.print(w->humidity);
   Serial.println('%');
   
-  Serial.print("Visibility: ");
+  Serial.print(F("Visibility: "));
   Serial.print(w->visibility);
   Serial.println("m");
   
-  Serial.print("Wind speed: ");
+  Serial.print(F("Wind speed: "));
   Serial.print(w->wind_speed);
-  if(w->units == metric || w->units == default_) Serial.println("m/s");
-  else if(w->units == imperial) Serial.println("mi/s");
+  if(w->units == metric || w->units == default_) Serial.println(F("m/s"));
+  else if(w->units == imperial) Serial.println(F("mi/s"));
   
-  Serial.print("Wind direction: ");
+  Serial.print(F("Wind direction: "));
   Serial.print(windDirection(w->wind_direction));
   Serial.print('(');
   Serial.print(w->wind_direction);
-  Serial.println("\xC2\xB0)"); //degrees = °
+  Serial.println(F("\xC2\xB0)")); //degrees = °
   
-  Serial.print("Clouds: ");
+  Serial.print(F("Clouds: "));
   Serial.print(w->clouds);
   Serial.println('%');
   
-  Serial.print("Rain 1h: ");
+  Serial.print(F("Rain 1h: "));
   Serial.print(w->rain_1h);
   Serial.println("mm");
   
-  Serial.print("Rain 3h: ");
+  Serial.print(F("Rain 3h: "));
   Serial.print(w->rain_3h);
   Serial.println("mm");
   
-  Serial.print("Snow 1h: ");
+  Serial.print(F("Snow 1h: "));
   Serial.print(w->snow_1h);
   Serial.println("mm");
   
-  Serial.print("Snow 3h: ");
+  Serial.print(F("Snow 3h: "));
   Serial.print(w->snow_3h);
   Serial.println("mm");
   
-  Serial.print("Sunrise: ");
+  Serial.print(F("Sunrise: "));
   Serial.print((w->sunrise/3600)%24); //hours
   Serial.print(':');
   Serial.print((w->sunrise/60)%60);   //minutes
   Serial.print(':');
   Serial.println(w->sunrise%60);      //seconds
   
-  Serial.print("Sunset: ");
+  Serial.print(F("Sunset: "));
   Serial.print((w->sunset/3600)%24); //hours
   Serial.print(':');
   Serial.print((w->sunset/60)%60);   //minutes
   Serial.print(':');
   Serial.println(w->sunset%60);      //seconds
   
-  Serial.print("Country: "); Serial.println(w->country);
+  Serial.print(F("Country: ")); Serial.println(w->country);
   
-  Serial.print("Timezone: GMT");
+  Serial.print(F("Timezone: GMT"));
   if(w->timezone > 0) Serial.print('+');
   Serial.println(w->timezone/3600);
   
-  Serial.print("City name: "); Serial.println(w->city_name);
+  Serial.print(F("City name: ")); Serial.println(w->city_name);
   
   Serial.print("City ID: "); Serial.println(w->city_id);
 
-  Serial.print("Data receiving time: ");
+  Serial.print(F("Data receiving time: "));
   Serial.print((w->data_time/3600)%24); //hours
   Serial.print(':');
   Serial.print((w->data_time/60)%60);   //minutes
   Serial.print(':');
   Serial.println(w->data_time%60);      //seconds
   
-  Serial.print("Status: "); Serial.println(w->status);
+  Serial.print(F("Status: ")); Serial.println(w->status);
 }
 
 
@@ -202,4 +203,3 @@ String windDirection(int direction){
   else if(direction < 326) return F("NW");
   return F("NNW");
 }
-
