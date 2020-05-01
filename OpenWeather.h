@@ -48,10 +48,11 @@ typedef struct{
   unsigned long city_id = 0;          //City ID
   byte units = 0;                     //Units of response
   unsigned long data_time = 0;        //Data receiving time in seconds UNIX (including timezone)
-  int status = 0;                     //Status of received message (> 0 HTTP codes, -1 to -11 are HTTP client errors defined in ESP8266HTTPClient.h,
+  int status = 0;                     //Status of received message (> 0 HTTP codes, -1 to -11 are HTTP client errors defined in ESP8266HTTPClient.h)
                                       // 404 is CITY_NOT_FOUND
                                       // 401 invalid API key
 } Weather;
+
 
 //Units enums
 enum{
@@ -65,7 +66,7 @@ class OPEN_WEATHER{
   public:
   //OpenWeather(String key_);
   void key(String key_);
-  byte getWeather(Weather *ret,String dest, byte units = default_, char* language = "");
+  int getWeather(Weather *ret,String dest, byte units = default_, char* language = "");
   Weather getWeatherByCityName(String dest, String country_code = "", byte units = default_, char* language = "");
   Weather getWeatherByCityName(String dest, byte units = default_, char* language = "");
   Weather getWeatherByID(unsigned long ID, byte units = default_, char* language = "");
@@ -74,8 +75,10 @@ class OPEN_WEATHER{
   Weather getWeatherByCoords(float latitude, float longitude, byte units = default_, char* language = "");
 
   private:
-  void JsonSerialize(String json, Weather *I);
+  void JsonSerialize(String& json, Weather *I);
+  //void clearStruct(Weather &s);
   String API_key;
+  HTTPClient http;
 };
 
 extern OPEN_WEATHER OpenWeather;
