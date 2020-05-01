@@ -10,9 +10,7 @@ void OPEN_WEATHER::key(String key_){
   API_key = key_;
 }
 
-byte OPEN_WEATHER::getWeather(Weather *ret,String dest, byte units, char* language){
-  HTTPClient http;
-  
+int OPEN_WEATHER::getWeather(Weather *ret,String dest, byte units, char* language){
   String openweatherURL = String(F("http://api.openweathermap.org/data/2.5/weather?"));
   openweatherURL += dest;
   if(units == metric) openweatherURL += String(F("&units=metric"));
@@ -21,10 +19,12 @@ byte OPEN_WEATHER::getWeather(Weather *ret,String dest, byte units, char* langua
   openweatherURL += String(F("&appid="));
   openweatherURL += API_key;
   
+  http.setTimeout(2000);
+  //http.setReuse(false);
   http.begin(openweatherURL);
   
-  int httpCode = http.GET();
-  if (httpCode > 0) {
+  ret->status = http.GET();
+  if (ret->status == 200) {
     String payload = http.getString();
     //Serial.println(payload);
     JsonSerialize(payload,ret);
@@ -33,7 +33,6 @@ byte OPEN_WEATHER::getWeather(Weather *ret,String dest, byte units, char* langua
     ret->sunset += ret->timezone;
     //ret->sunset %= 86400L;
     ret->data_time += ret->timezone;
-    ret->status = httpCode;
     ret->units = units;
   }
   http.end();   //Close connection
@@ -42,6 +41,7 @@ byte OPEN_WEATHER::getWeather(Weather *ret,String dest, byte units, char* langua
 
 Weather OPEN_WEATHER::getWeatherByCityName(String dest, String country_code, byte units, char* language){
   Weather ret;
+  //clearStruct(ret);
   dest = String(F("&q="))+dest;
   if(country_code[0] != 0) dest += "," + String(country_code);
   dest.replace(" ", "+"); //HTML encoding does not allow spaces
@@ -51,6 +51,7 @@ Weather OPEN_WEATHER::getWeatherByCityName(String dest, String country_code, byt
 
 Weather OPEN_WEATHER::getWeatherByCityName(String dest, byte units, char* language){
   Weather ret;
+  //clearStruct(ret);
   dest = String(F("&q="))+dest;
   dest.replace(" ", "+"); //HTML encoding does not allow spaces
   getWeather(&ret,dest,units,language);
@@ -59,6 +60,7 @@ Weather OPEN_WEATHER::getWeatherByCityName(String dest, byte units, char* langua
 
 Weather OPEN_WEATHER::getWeatherByID(unsigned long ID, byte units, char* language){
   Weather ret;
+  //clearStruct(ret);
   getWeather(&ret,String(F("&id="))+String(ID),units,language);
   return ret;
 }
@@ -67,6 +69,7 @@ Weather OPEN_WEATHER::getWeatherByZIP(unsigned long ZIP, String country_code, by
   String destination = String(F("&zip="))+String(ZIP);
   if(country_code[0] != 0) destination += "," + String(country_code);
   Weather ret;
+  //clearStruct(ret);
   getWeather(&ret,destination,units,language);
   return ret;
 }
@@ -74,17 +77,19 @@ Weather OPEN_WEATHER::getWeatherByZIP(unsigned long ZIP, String country_code, by
 Weather OPEN_WEATHER::getWeatherByZIP(unsigned long ZIP, byte units, char* language){
   String destination = String(F("&zip="))+String(ZIP);
   Weather ret;
+  //clearStruct(ret);
   getWeather(&ret,destination,units,language);
   return ret;
 }
 
 Weather OPEN_WEATHER::getWeatherByCoords(float latitude, float longitude, byte units, char* language){
   Weather ret;
+  //clearStruct(ret);
   getWeather(&ret,String(F("&lat="))+String(latitude) + String(F("&lon=")) + String(longitude),units,language);
   return ret;
 }
 
-void OPEN_WEATHER::JsonSerialize(String json, Weather *I){
+void OPEN_WEATHER::JsonSerialize(String& json, Weather *I){
   int json_length = json.length();
   byte object = 0;
   bool key_started = false;
@@ -102,9 +107,9 @@ void OPEN_WEATHER::JsonSerialize(String json, Weather *I){
           if(key == F("lon") && object == 1) I->longitude = value.toFloat();
           else if(key == F("lat") && object == 1) I->latitude = value.toFloat();
           else if(key == F("id") && object == 2) I->weather_id = value.toInt();
-          else if(key == F("main") && object == 2) strcpy(I->weather_main, value.c_str());
-          else if(key == F("description") && object == 2) strcpy(I->weather_description, value.c_str());
-          else if(key == F("icon") && object == 2) strcpy(I->weather_icon, value.c_str());
+          else if(key == F("main") && object == 2) strncpy(I->weather_main, value.c_str(),40);
+          else if(key == F("description") && object == 2) strncpy(I->weather_description, value.c_str(),40);
+          else if(key == F("icon") && object == 2) strncpy(I->weather_icon, value.c_str(),10);
           else if(key == F("temp") && object == 4) I->temp = value.toFloat();
           else if(key == F("pressure") && object == 4) I->pressure = value.toFloat();
           else if(key == F("humidity") && object == 4) I->humidity = value.toFloat();
@@ -118,12 +123,12 @@ void OPEN_WEATHER::JsonSerialize(String json, Weather *I){
           else if(key == F("3h") && object == 7) I->rain_3h = value.toFloat();
           else if(key == F("1h") && object == 8) I->snow_1h = value.toFloat();
           else if(key == F("3h") && object == 8) I->snow_3h = value.toFloat();
-          else if(key == F("country") && object == 9) strcpy(I->country, value.c_str());
+          else if(key == F("country") && object == 9) strncpy(I->country, value.c_str(),6);
           else if(key == F("sunrise") && object == 9) I->sunrise = atol(value.c_str());
           else if(key == F("sunset") && object == 9) I->sunset = atol(value.c_str());
           else if(key == F("timezone") && object == 0) I->timezone = value.toInt();
           else if(key == F("id") && object == 0) I->city_id = value.toInt();
-          else if(key == F("name") && object == 0) strcpy(I->city_name, value.c_str());
+          else if(key == F("name") && object == 0) strncpy(I->city_name, value.c_str(),60);
           else if(key == F("dt") && object == 0) I->data_time = atol(value.c_str());
 
         if(json.charAt(i) == '}'){
@@ -172,6 +177,39 @@ void OPEN_WEATHER::JsonSerialize(String json, Weather *I){
     }
   }
 }
+
+
+/*void OPEN_WEATHER::clearStruct(Weather &s){
+  s.longitude = 0.00;
+  s.latitude = 0.00;
+  s.weather_id = 0;
+  s.weather_main[0] = '/0';
+  s.weather_description[0] = '/0';
+  s.weather_icon[0] = '/0';
+  s.temp = 0.00;
+  s.temp_max = 0.00;
+  s.temp_min = 0.00;
+  s.pressure = 0.00;
+  s.humidity = 0.00;
+  s.visibility = 0;
+  s.wind_speed = 0.00;
+  s.wind_direction = 0;
+  s.clouds = 0;
+  s.rain_1h = 0.00;
+  s.rain_3h = 0.00;
+  s.snow_1h = 0.00;
+  s.snow_3h = 0.00;
+  s.sunrise = 0UL;
+  s.sunset = 0UL;
+  s.country[0] = '/0';
+  s.timezone = 0L;
+  s.city_name[0] = '/0';
+  s.city_id = 0UL;
+  s.units = 0;
+  s.data_time = 0UL;
+  s.status = 0;
+}*/
+
 
 OPEN_WEATHER OpenWeather;
 
