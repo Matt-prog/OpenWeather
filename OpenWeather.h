@@ -91,6 +91,7 @@ class OpenWeather{
   OpenWeather &operator=(const OpenWeather &w){
     if(weatherInfo && weatherInfoCount >= 1) delete[] weatherInfo ;
     memcpy(this, &w, sizeof(OpenWeather));
+    API_key = w.API_key;
     weatherInfo = new WeatherInfo[weatherInfoCount];
     //copy dynamic array
     if(weatherInfo){
