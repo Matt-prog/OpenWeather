@@ -1,15 +1,17 @@
 OpenWeather	KEYWORD1
-Weather	KEYWORD3
 
 longitude	KEYWORD2
 latitude	KEYWORD2
-weather_id	KEYWORD2
-weather_main	KEYWORD2
-weather_description	KEYWORD2
-weather_icon	KEYWORD2
+weatherInfoCount	KEYWORD2
+weatherInfo	KEYWORD2
+id	KEYWORD2
+main	KEYWORD2
+description	KEYWORD2
+icon	KEYWORD2
 temp	KEYWORD2
 temp_max	KEYWORD2
 temp_min	KEYWORD2
+feels_like	KEYWORD2
 pressure	KEYWORD2
 humidity	KEYWORD2
 visibility	KEYWORD2
@@ -29,12 +31,24 @@ city_id	KEYWORD2
 data_time	KEYWORD2
 units	KEYWORD2
 
-default_	LITERAL1
+metricK	LITERAL1
 metric	LITERAL1
 imperial	LITERAL1
+
+OW_NONE	LITERAL1
+OW_OK	LITERAL1
+OW_BAD_API_KEY	LITERAL1
+OW_CITY_NOT_FOUND	LITERAL1
+OW_LIMIT_REACHED	LITERAL1
+OW_SERVER_ERROR	LITERAL1
+
+Units	LITERAL1
+WeatherInfo	KEYWORD2
 
 key	KEYWORD2
 getWeatherByCityName	KEYWORD2
 getWeatherByID	KEYWORD2
 getWeatherByZIP	KEYWORD2
 getWeatherByCoords	KEYWORD2
+setWeatherArraySize	KEYWORD2
+getWeatherArraySize	KEYWORD2
