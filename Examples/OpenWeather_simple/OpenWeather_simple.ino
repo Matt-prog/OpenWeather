@@ -2,7 +2,6 @@
  *  to the Serial monitor.
  */
  
-//#include <ESP8266WiFi.h>
 #include <OpenWeather.h>
 
 OpenWeather weather;
@@ -49,7 +48,7 @@ void setup() {
   Serial.println(F("Weather data:"));
   weather.key(OW_API_KEY); //Inserting API key that allows us to use openweathermap.org API
   weather.getWeatherByCityName(city_name,country,units,language); //Getting weather data from openweathermap.org
-  //Execution time around 100ms
+  //Execution time around 100ms usually
   //You can also use those commands to get weather:
   //getWeatherByID(ID,units,language);
   //getWeatherByZIP(ZIP_code,country,units,language);
